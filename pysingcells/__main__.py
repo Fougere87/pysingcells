@@ -15,13 +15,16 @@ def main(config_path):
     """ Main function of pro'gramme read configuration and run enable step """
     config = configparser.ConfigParser()
 
-    logger.setup_logging(**config)
-
     config.read(config_path)
     print(config.sections())
+    logger.setup_logging(**config)
 
     for key in config['paths']: print(config['paths'][key])
 
+    mapper = hisat2.Hisat2()
+    mapper.read_configuration(**config)
+    if mapper.check_configuration() :
+        mapper.run()
 
 def trimming(files_dir, rep_out , paired=1) :
     file_list = os.listdir(files_dir)
