@@ -24,7 +24,6 @@ out_path = ${paths:read:trimmed}
 enable = yes
 name = hisat2
 bin_path = ${paths:bin}/${mapper:name}
-samtools_path = ${paths:bin}/samtools
 in_path = ${paths:read:trimmed}
 out_path = ${paths:mapping} 
 
@@ -34,6 +33,7 @@ name = count_name
 bin_path = ${paths:bin}/${counts:name}
 in_path = ${paths:mapping}
 out_path = ${paths:counts}
+samtools_path = ${paths:bin}/samtools
 merged_path = ${paths:merged_counts}
 
 [options]
@@ -42,3 +42,4 @@ threads = 8
 paired_reads = 1
 files_names = Sample_Bq_*
 reads_ext = .fq
+logging_level = 10 # 10 = Debug, 20 = Info, 30 = Warning, 40 = Error, 50 = Critical, default 10
