@@ -1,0 +1,44 @@
+
+[paths]
+base = /home/user/
+data = ${paths:base}/data/
+bin = ${paths:base}/bin/
+genome = ${paths:data}/genome/organisme.fasta
+index = ${paths:data}/index/${mapper:name}
+annotation = ${paths:data}/annotation/organisme.gtf
+mapping = ${paths:data}/mapping/
+counts = ${paths:data}/counts/
+merged_counts = ${paths:counts}/merge.tpm
+
+	      [[read]]
+	      raws = ${paths:data}/reads/raws/
+	      trimmed = ${paths:data}/reads/trimmed/
+
+[trimmer]
+enable = no
+bin_path = ${paths:bin}/trimming
+in_path = ${paths:read:raws}
+out_path = ${paths:read:trimmed}
+
+[mapper]
+enable = yes
+name = hisat2
+bin_path = ${paths:bin}/${mapper:name}
+samtools_path = ${paths:bin}/samtools
+in_path = ${paths:read:trimmed}
+out_path = ${paths:mapping} 
+
+[counts]
+enable = yes
+name = count_name
+bin_path = ${paths:bin}/${counts:name}
+in_path = ${paths:mapping}
+out_path = ${paths:counts}
+merged_path = ${paths:merged_counts}
+
+[options]
+adding_to_collection = 1
+threads = 8
+paired_reads = 1
+files_names = Sample_Bq_*
+reads_ext = .fq
