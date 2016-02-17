@@ -3,6 +3,7 @@
 
 # std import
 import os
+from collections import deque
 
 # fief import
 from fief import filter_effective_parameters as fief
@@ -28,6 +29,7 @@ class Hisat2(AbcMapper):
         self.in_path = mapper["in_path"]
         self.out_path = mapper["out_path"]
         self.index_path = mapper["index_path"]
+        self.log_dir = mapper["log"]
 
         self.state = StepStat.load
     
@@ -76,6 +78,13 @@ class Hisat2(AbcMapper):
             log.critical("Path you set for out_path isn't a directory")
             return False
 
+        if not os.path.isdir(self.log_dir) :
+            self.state = StepStat.no_ready
+
+            log.critical("Path you set for log_dir isn't a directory")
+            return False
+
+
         self.state = StepStat.ready
         return True
 
@@ -88,5 +97,14 @@ class Hisat2(AbcMapper):
             return False
 
         base_command = [self.bin_path, "-x", self.index_path]
+
         for process in self._popen_run(base_command, input_flag="-q", output_flag="-S"):
             process.wait()
+
+            if process.returncode != 0:
+                self.state = StepStat.failled
+            else:
+                self.state = StepStat.succes
+
+            self._write_process(self.log_dir, process)
+        

@@ -32,14 +32,21 @@ class AbcMapper(AbcStep, metaclass=ABCMeta):
         return self.__class__.__name__
 
     def _popen_run(self, base_cmd, input_flag="-i", output_flag="-o"):
-        """ generator of popen subprocess to run hista2"""
+        """ generator of popen subprocess to run mapper """
 
         for read_name in scandir(self.in_path):
             if not read_name.is_dir():
-                base_cmd.append(input_flag)
-                base_cmd.append(os.path.join(self.in_path, read_name.name))
-                base_cmd.append(output_flag)
-                base_cmd.append(os.path.join(self.out_path, read_name.name))
-                yield subprocess.Popen(base_cmd,
+                second_part = list()
+                second_part.append(input_flag)
+                second_part.append(os.path.join(self.in_path, read_name.name))
+                second_part.append(output_flag)
+                second_part.append(os.path.join(self.out_path, read_name.name))
+
+                process = subprocess.Popen(base_cmd + second_part,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
+
+                process.argument = base_cmd + second_part
+                process.name = read_name.name
+
+                yield process

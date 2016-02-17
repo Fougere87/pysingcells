@@ -26,6 +26,7 @@ name = hisat2
 bin_path = ${paths:bin}/${mapper:name}
 in_path = ${paths:read:trimmed}
 out_path = ${paths:mapping} 
+log = ${paths:base}/dev/pysingcells/${mapper:name}/
 
 [counts]
 enable = yes

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # std import
+import os
+import json
 from enum import Enum
 from abc import ABCMeta, abstractmethod
 
@@ -34,4 +36,13 @@ class AbcStep(metaclass=ABCMeta):
         """ Run the mapper effectively """
         pass
 
+    def _write_process(self, log_dir, process):
+        """ Write step log in log_dir """
+        log = {
+            "cmd": " ".join(process.argument),
+            "stdout": process.stdout.read().decode(),
+            "stderr": process.stderr.read().decode()
+        }
 
+        with open(os.path.join(log_dir, process.name), 'w') as log_file:
+            json.dump(log, log_file)
