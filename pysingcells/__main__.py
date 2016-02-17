@@ -13,10 +13,11 @@ from .mapper import hisat2
 
 def main(config_path):
     """ Main function of pro'gramme read configuration and run enable step """
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(interpolation =
+                                       configparser.ExtendedInterpolation())
 
     config.read(config_path)
-    print(config.sections())
+
     logger.setup_logging(**config)
 
     for key in config['paths']: print(config['paths'][key])
