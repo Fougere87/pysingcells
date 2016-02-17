@@ -1,7 +1,7 @@
 
 # -*- coding: utf-8 -*-
 
-# stp import
+# std import
 import os
 
 # fief import
@@ -18,12 +18,6 @@ class Hisat2(AbcMapper):
     def __init__(self):
         """ Intialize hisat2 runner object """
         super().__init__()
-        self.enable = False
-        self.name = ""
-        self.bin_path = ""
-        self.in_path = ""
-        self.out_path = ""
-        
 
     @fief
     def read_configuration(self, mapper):
@@ -33,6 +27,7 @@ class Hisat2(AbcMapper):
         self.bin_path = mapper["bin_path"]
         self.in_path = mapper["in_path"]
         self.out_path = mapper["out_path"]
+        self.index_path = mapper["index_path"]
 
         self.state = StepStat.load
     
@@ -63,6 +58,12 @@ class Hisat2(AbcMapper):
             run mapping")
             return False
 
+        # if not os.path.isfile(self.index_path) :
+        #     self.state = StepStat.no_ready
+
+        #     log.critical("index file cannot read by you we can't run mapping")
+        #     return False
+
         if not os.path.isdir(self.in_path) :
             self.state = StepStat.no_ready
 
@@ -78,6 +79,14 @@ class Hisat2(AbcMapper):
         self.state = StepStat.ready
         return True
 
+    @fief
     def run(self):
         """ Run the mapper effectively """
-        pass
+        if self.state != StepStat.ready:
+            log.debug("You are not in the good state to run this, maybe you \
+            have a problem.")
+            return False
+
+        base_command = [self.bin_path, "-x", self.index_path]
+        for process in self._popen_run(base_command, input_flag="-q", output_flag="-S"):
+            process.wait()
