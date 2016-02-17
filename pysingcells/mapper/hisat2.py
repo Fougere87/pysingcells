@@ -58,11 +58,11 @@ class Hisat2(AbcMapper):
             run mapping")
             return False
 
-        # if not os.path.isfile(self.index_path) :
-        #     self.state = StepStat.no_ready
+        if not os.path.isdir(os.path.dirname(self.index_path)) :
+            self.state = StepStat.no_ready
 
-        #     log.critical("index file cannot read by you we can't run mapping")
-        #     return False
+            log.critical("index file cannot read by you we can't run mapping")
+            return False
 
         if not os.path.isdir(self.in_path) :
             self.state = StepStat.no_ready
