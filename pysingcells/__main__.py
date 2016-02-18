@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
 # std import
-import os
 import sys
+import pkgutil
 import configparser
-from subprocess import call
 
 # project import
 from . import logger
-from .mapping import hisat2
 
 def main(config_path):
     """ Main function of programme read configuration and run enable step """
@@ -19,14 +17,29 @@ def main(config_path):
 
     logger.setup_logging(**config)
 
-    for key in config['options']['steps'].split(","):
-        for key2 in config[key]:
-            print(key2 + ' : ' + config[key][key2])
+    for step_name in config['options']['steps'].split(","):
 
-def trimming(files_dir, rep_out , paired=1) :
-    file_list = os.listdir(files_dir)
-    for fastq in file_list :
-        call(['cmd', 'options...'])
+        if step_name in [modname for importer, modname, ispkg in 
+                         pkgutil.iter_modules(
+                             sys.modules[__package__].__path__)]:
+
+            appli_name = config[step_name]['name']
+            module_step = __import__(".".join(["pysingcells", step_name]),
+                                     fromlist="pysingcells")
+
+            if appli_name in [modname for importer, modname, ispkg in 
+                              pkgutil.iter_modules(module_step.__path__)]:
+
+                appli_module = __import__(".".join(["pysingcells", step_name, 
+                                                    appli_name]), 
+                                          fromlist=".".join(["pysingcells", 
+                                                             step_name]))
+                appli_class = getattr(appli_module, appli_name.title())
+                appli_instance = appli_class()
+                appli_instance.read_configuration(**config)
+
+                if appli_instance.check_configuration():
+                    appli_instance.run()
 
 
 if __name__ == "__main__":
