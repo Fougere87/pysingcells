@@ -1,4 +1,4 @@
 
 """ All code related to pysingcells """
 
-from . import mapper
+from . import mapping

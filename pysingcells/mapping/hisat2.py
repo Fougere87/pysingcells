@@ -20,35 +20,35 @@ class Hisat2(AbcMapper):
         super().__init__()
 
     @fief
-    def read_configuration(self, mapper):
+    def read_configuration(self, mapping):
         """ Read the configuration object and prepare object to run """
-        self.enable = mapper.getboolean("enable")
-        self.name = mapper["name"]
-        self.bin_path = mapper["bin_path"]
-        self.in_path = mapper["in_path"]
-        self.out_path = mapper["out_path"]
-        self.index_path = mapper["index_path"]
-        self.log_dir = mapper["log"]
+
+        log.info(self.get_name() + " read configuration")
+
+        self.name = mapping["name"]
+        self.bin_path = mapping["bin_path"]
+        self.in_path = mapping["in_path"]
+        self.out_path = mapping["out_path"]
+        self.index_path = mapping["index_path"]
+        self.log_dir = mapping["log"]
 
         self.state = StepStat.load
     
     def check_configuration(self):
         """ Check if file, binary, other ressource is avaible for run mapper """
 
+        log.info(self.get_name() + " check configuration")
+
         if self.state != StepStat.load:
-            log.debug("You are not in the good state to run this, maybe you \
+            log.critical("You are not in the good state to run this, maybe you \
             have a problem.")
             return False
-
-        if not self.enable :
-            self.state = StepStat.no_ready
-            return self.enable
 
         if not self.name.lower() == self.get_name().lower() : 
             self.state = StepStat.no_ready
                     
-            log.debug("Mapper name is differente of classname we can't use this\
-            class")
+            log.critical("Mapper name is differente of classname we can't use \
+            this class")
             return False
 
         if not os.path.isfile(self.bin_path) and os.access(self.bin_path,
@@ -62,7 +62,7 @@ class Hisat2(AbcMapper):
         if not os.path.isdir(os.path.dirname(self.index_path)) :
             self.state = StepStat.no_ready
 
-            log.critical("index file cannot read by you we can't run mapping")
+            log.critical("Index file cannot read by you we can't run mapping")
             return False
 
         if not os.path.isdir(self.in_path) :
@@ -90,20 +90,28 @@ class Hisat2(AbcMapper):
     @fief
     def run(self):
         """ Run the mapper effectively """
+        
+        log.info(self.get_name() + " run")
+
         if self.state != StepStat.ready:
-            log.debug("You are not in the good state to run this, maybe you \
+            log.debug(" You are not in the good state to run this, maybe you \
             have a problem.")
             return False
 
         base_command = [self.bin_path, "-x", self.index_path]
 
-        for process in self._popen_run(base_command, input_flag="-q", output_flag="-S"):
+        for process in self._popen_run(base_command, input_flag="-q",
+                                       output_flag="-S"):
             process.wait()
 
             if process.returncode != 0:
+                log.warning(self.get_name() + " process " + process.name +
+                            " failed see log dir.")
                 self.state = StepStat.failled
             else:
+                log.info(self.get_name() + " process " + process.name +
+                         " sucess")
                 self.state = StepStat.succes
 
-            self._write_process(self.log_dir, process)
+            self._write_process(process)
         

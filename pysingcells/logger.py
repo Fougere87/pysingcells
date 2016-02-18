@@ -15,14 +15,15 @@ log = logging.getLogger()
 @fief
 def setup_logging(options):
     
-    log.setLevel(10 if "logging_level" in options else
-                 options["logging_level"])
+    log_level = 10 if "logging_level" in options else options["logging_level"]
+    log.setLevel(log_level)
 
     handler = logging.StreamHandler(sys.stderr)
-    handler.setFormatter(logging.Formatter('%(levelname)s :: %(message)s'))
-    handler.setLevel(10 if "logging_level" in options else
-                     options["logging_level"])
+    formatter = logging.Formatter('%(levelname)s :: %(message)s')
 
-    log.addHandler(logging.StreamHandler(sys.stderr))
+    handler.setFormatter(formatter)
+    handler.setLevel(log_level)
+
+    log.addHandler(handler)
 
 

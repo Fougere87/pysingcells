@@ -8,11 +8,10 @@ from subprocess import call
 
 # project import
 from . import logger
-from .mapper import hisat2
-
+from .mapping import hisat2
 
 def main(config_path):
-    """ Main function of pro'gramme read configuration and run enable step """
+    """ Main function of programme read configuration and run enable step """
     config = configparser.ConfigParser(interpolation =
                                        configparser.ExtendedInterpolation())
 
