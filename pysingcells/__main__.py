@@ -11,9 +11,10 @@ def main(config_path):
     config = configparser.ConfigParser()
 
     config.read(config_path)
-    print(config.sections())
 
-    for key in config['paths']: print(config['paths'][key])
+    for key in config['options']['steps'].split(","):
+        for key2 in config[key]:
+            print(key2 + ' : ' + config[key][key2])
 
 
 def trimming(files_dir, rep_out , paired=1) :

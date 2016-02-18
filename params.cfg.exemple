@@ -12,22 +12,19 @@ merged_counts = ${paths:counts}/merge.tpm
 raws_read = ${paths:data}/reads/raws/
 trimmed_read = ${paths:data}/reads/trimmed/
 
-[trimmer]
-enable = no
+[trimming]
 bin_path = ${paths:bin}/trimming
 in_path = ${paths:raws_read}
 out_path = ${paths:trimmed_read}
 
-[mapper]
-enable = yes
+[mapping]
 name = hisat2
 bin_path = ${paths:bin}/${mapper:name}
 samtools_path = ${paths:bin}/samtools
 in_path = ${paths:read:trimmed}
 out_path = ${paths:mapping} 
 
-[counts]
-enable = yes
+[counting]
 name = count_name
 bin_path = ${paths:bin}/${counts:name}
 in_path = ${paths:mapping}
@@ -35,6 +32,7 @@ out_path = ${paths:counts}
 merged_path = ${paths:merged_counts}
 
 [options]
+steps = mapping
 adding_to_collection = 1
 threads = 8
 paired_reads = 1
