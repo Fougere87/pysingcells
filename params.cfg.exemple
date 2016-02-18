@@ -1,16 +1,16 @@
 
 [paths]
 base = /home/user/
-data = ${paths:base}/data/
+data = ${paths:base}/dat/
 bin = ${paths:base}/bin/
-genome = ${paths:data}/genome/organisme.fasta
-index = ${paths:data}/index/${mapper:name}
-annotation = ${paths:data}/annotation/organisme.gtf
-mapping = ${paths:data}/mapping/
-counts = ${paths:data}/counts/
+genome = ${paths:data}/genome/organism.fasta
+index = ${paths:data}/indexes/${mapping:name}/index
+annotation = ${paths:data}/annotation/organism.gtf
+mapping = ${paths:data}/mapping/${mapping:name}
 merged_counts = ${paths:counts}/merge.tpm
+counts = ${paths:data}/counts/
 raws_read = ${paths:data}/reads/raws/
-trimmed_read = ${paths:data}/reads/trimmed/
+trimmed_read = ${paths:data}/read/tmp/
 
 [trimming]
 bin_path = ${paths:bin}/trimming
@@ -19,21 +19,22 @@ out_path = ${paths:trimmed_read}
 
 [mapping]
 name = hisat2
-bin_path = ${paths:bin}/${mapper:name}
-in_path = ${paths:read:trimmed}
-out_path = ${paths:mapping} 
-log = ${paths:base}/dev/pysingcells/${mapper:name}/
+bin_path = ${paths:bin}/${mapping:name}
+in_path = ${paths:trimmed_read}
+out_path = ${paths:mapping}
+index_path = ${paths:index}
+log = ${paths:base}/pysingcells/log/${mapping:name}/
 
 [counting]
 name = count_name
-bin_path = ${paths:bin}/${counts:name}
+bin_path = ${paths:bin}/${counting:name}
 in_path = ${paths:mapping}
 out_path = ${paths:counts}
 samtools_path = ${paths:bin}/samtools
 merged_path = ${paths:merged_counts}
 
 [options]
-steps = mapping
+steps=trimming,mapping,counting
 adding_to_collection = 1
 threads = 8
 paired_reads = 1
