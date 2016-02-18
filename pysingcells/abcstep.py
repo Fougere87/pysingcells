@@ -20,6 +20,7 @@ class AbcStep(metaclass=ABCMeta):
 
     def __init__(self):
         self.state = StepStat.nostat
+        self.log_dir = ""
 
     @abstractmethod
     def read_configuration(self, configuration):
@@ -36,7 +37,7 @@ class AbcStep(metaclass=ABCMeta):
         """ Run the mapper effectively """
         pass
 
-    def _write_process(self, log_dir, process):
+    def _write_process(self, process):
         """ Write step log in log_dir """
         log = {
             "cmd": " ".join(process.argument),
@@ -44,5 +45,5 @@ class AbcStep(metaclass=ABCMeta):
             "stderr": process.stderr.read().decode()
         }
 
-        with open(os.path.join(log_dir, process.name), 'w') as log_file:
+        with open(os.path.join(self.log_dir, process.name), 'w') as log_file:
             json.dump(log, log_file)

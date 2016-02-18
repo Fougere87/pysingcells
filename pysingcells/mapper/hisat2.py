@@ -3,7 +3,6 @@
 
 # std import
 import os
-from collections import deque
 
 # fief import
 from fief import filter_effective_parameters as fief
