@@ -40,6 +40,14 @@ def main(config_path):
 
                 if appli_instance.check_configuration():
                     appli_instance.run()
+                else:
+                    logger.log.warning(appli_name +
+                                       " failled in check her conf")
+            else:
+                logger.log.warning(appli_name +
+                                   " isn't avaible in pysingcelss." + step_name)
+        else:
+            logger.log.warning(step_name + " isn't avaible pysingcells")
 
 
 if __name__ == "__main__":
