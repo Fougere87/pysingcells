@@ -27,6 +27,7 @@ def main(config_path):
                              sys.modules[__package__].__path__)]:
 
             appli_name = config[step_name]['name']
+
             module_step = __import__(".".join(["pysingcells", step_name]),
                                      fromlist="pysingcells")
 
@@ -56,6 +57,9 @@ def main(config_path):
 
 
 def snake_case_to_capword(base):
+    if string_utils.is_snake_case(base) or base.isupper():
+        return base
+
     return string_utils.snake_case_to_camel(base).title()
 
 if __name__ == "__main__":

@@ -26,6 +26,7 @@ class AbcMapper(AbcStep, metaclass=ABCMeta):
         self.index_path = ""
         self.in_path = ""
         self.out_path = ""
+        self.options = ""
 
     def get_name(self):
         """ Get the name of mapper """
