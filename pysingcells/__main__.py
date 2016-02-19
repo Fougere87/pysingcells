@@ -5,6 +5,9 @@ import sys
 import pkgutil
 import configparser
 
+# string-utils import
+import string_utils
+
 # project import
 from . import logger
 
@@ -31,10 +34,12 @@ def main(config_path):
                               pkgutil.iter_modules(module_step.__path__)]:
 
                 appli_module = __import__(".".join(["pysingcells", step_name, 
-                                                    appli_name]), 
+                                                    appli_name]),
                                           fromlist=".".join(["pysingcells", 
                                                              step_name]))
-                appli_class = getattr(appli_module, appli_name.title())
+
+                appli_class = getattr(appli_module,
+                                      snake_case_to_capword(appli_name))
                 appli_instance = appli_class()
                 appli_instance.read_configuration(**config)
 
@@ -47,8 +52,11 @@ def main(config_path):
                 logger.log.warning(appli_name +
                                    " isn't avaible in pysingcelss." + step_name)
         else:
-            logger.log.warning(step_name + " isn't avaible pysingcells")
+            logger.log.warning(step_name + " isn't avaible in pysingcells")
 
+
+def snake_case_to_capword(base):
+    return string_utils.snake_case_to_camel(base).title()
 
 if __name__ == "__main__":
     main(sys.argv[1])
