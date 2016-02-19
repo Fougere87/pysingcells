@@ -100,18 +100,19 @@ class Hisat2(AbcMapper):
 
         base_command = [self.bin_path, "-x", self.index_path]
 
-        for process in self._popen_run(base_command, input_flag="-q",
-                                       output_flag="-S"):
+        for (arg, name, process) in self._popen_run(base_command,
+                                                    input_flag="-q",
+                                                    output_flag="-S"):
             process.wait()
 
             if process.returncode != 0:
-                log.warning(self.get_name() + " process " + process.name +
+                log.warning(self.get_name() + " process " + name +
                             " failed see log dir.")
                 self.state = StepStat.failled
             else:
-                log.info(self.get_name() + " process " + process.name +
+                log.info(self.get_name() + " process " + name +
                          " sucess")
                 self.state = StepStat.succes
 
-            self._write_process(process)
+            self._write_process(arg, name, process)
         

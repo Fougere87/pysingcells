@@ -36,17 +36,15 @@ class AbcMapper(AbcStep, metaclass=ABCMeta):
 
         for read_name in scandir(self.in_path):
             if not read_name.is_dir():
+                read_name = read_name.name
                 second_part = list()
                 second_part.append(input_flag)
-                second_part.append(os.path.join(self.in_path, read_name.name))
+                second_part.append(os.path.join(self.in_path, read_name))
                 second_part.append(output_flag)
-                second_part.append(os.path.join(self.out_path, read_name.name))
+                second_part.append(os.path.join(self.out_path, read_name))
 
                 process = subprocess.Popen(base_cmd + second_part,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)
 
-                process.argument = base_cmd + second_part
-                process.name = read_name.name
-
-                yield process
+                yield (base_cmd + second_part, read_name, process)

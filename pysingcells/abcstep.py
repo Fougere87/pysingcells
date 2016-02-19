@@ -37,13 +37,13 @@ class AbcStep(metaclass=ABCMeta):
         """ Run the mapper effectively """
         pass
 
-    def _write_process(self, process):
+    def _write_process(self, argument, name, process):
         """ Write step log in log_dir """
         log = {
-            "cmd": " ".join(process.argument),
+            "cmd": " ".join(argument),
             "stdout": process.stdout.read().decode(),
             "stderr": process.stderr.read().decode()
         }
 
-        with open(os.path.join(self.log_dir, process.name), 'w') as log_file:
+        with open(os.path.join(self.log_dir, name), 'w') as log_file:
             json.dump(log, log_file)
