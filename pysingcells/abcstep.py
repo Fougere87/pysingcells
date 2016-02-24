@@ -4,15 +4,8 @@
 # std import
 import os
 import json
-import subprocess
 from enum import Enum
 from abc import ABCMeta, abstractmethod
-
-# tested import
-try:
-    from os import scandir
-except ImportError:
-    from scandir import scandir
 
 class StepStat(Enum):
     nostat = 1
@@ -65,20 +58,3 @@ class AbcStep(metaclass=ABCMeta):
         with open(os.path.join(self.log_dir, name), 'w') as log_file:
             json.dump(log, log_file)
 
-    def _popen_run(self, base_cmd, input_flag="-i", output_flag="-o"):
-        """ generator of popen subprocess to run mapper """
-
-        for read_name in scandir(self.in_path):
-            if not read_name.is_dir():
-                read_name = read_name.name
-                second_part = list()
-                second_part.append(input_flag)
-                second_part.append(os.path.join(self.in_path, read_name))
-                second_part.append(output_flag)
-                second_part.append(os.path.join(self.out_path, read_name))
-
-                process = subprocess.Popen(base_cmd + second_part,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE)
-
-                yield (base_cmd + second_part, read_name, process)

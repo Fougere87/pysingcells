@@ -3,6 +3,7 @@
 
 # std import
 import os
+import subprocess
 from abc import ABCMeta
 
 # fief import
@@ -12,18 +13,27 @@ from fief import filter_effective_parameters as fief
 from ..logger import log
 from ..abcstep import AbcStep, StepStat
 
+# tested import
+try:
+    from os import scandir
+except ImportError:
+    from scandir import scandir
+
 class AbcMapper(AbcStep, metaclass=ABCMeta):
     """ Abstract class for mapper """
     
     def __init__(self):
+        """ Intilize mapper """
         super().__init__()
-        self.enable = False
         self.name = ""
         self.bin_path = ""
         self.index_path = ""
         self.in_path = ""
         self.out_path = ""
         self.options = ""
+        self.input_flag = ""
+        self.output_flag = ""
+        self.index_flag = ""
 
     @fief
     def read_configuration(self, mapping):
@@ -94,7 +104,6 @@ class AbcMapper(AbcStep, metaclass=ABCMeta):
         self.state = StepStat.ready
         return True
 
-    @fief
     def run(self):
         """ Run the mapper effectively """
 
@@ -124,3 +133,22 @@ class AbcMapper(AbcStep, metaclass=ABCMeta):
                 self.state = StepStat.succes
 
             self._write_process(arg, name, process)
+
+
+    def _popen_run(self, base_cmd, input_flag="-i", output_flag="-o"):
+        """ generator of popen subprocess to run mapper """
+
+        for read_name in scandir(self.in_path):
+            if not read_name.is_dir():
+                read_name = read_name.name
+                second_part = list()
+                second_part.append(input_flag)
+                second_part.append(os.path.join(self.in_path, read_name))
+                second_part.append(output_flag)
+                second_part.append(os.path.join(self.out_path, read_name))
+
+                process = subprocess.Popen(base_cmd + second_part,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE)
+
+                yield (base_cmd + second_part, read_name, process)
