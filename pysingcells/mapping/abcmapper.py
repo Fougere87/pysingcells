@@ -114,8 +114,8 @@ class AbcMapper(AbcStep, metaclass=ABCMeta):
             have a problem.")
             return False
 
-        base_command = [self.bin_path, self.index_flag, self.index_path,
-                        self.options]
+        base_command = [self.bin_path, self.index_flag, self.index_path]
+        base_command += self.options.split(" ")
 
         for (arg, name, process) in self._popen_run(base_command,
                                                     input_flag=self.input_flag,
@@ -146,7 +146,6 @@ class AbcMapper(AbcStep, metaclass=ABCMeta):
                 second_part.append(os.path.join(self.in_path, read_name))
                 second_part.append(output_flag)
                 second_part.append(os.path.join(self.out_path, read_name))
-
                 process = subprocess.Popen(base_cmd + second_part,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE)

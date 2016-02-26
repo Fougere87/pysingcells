@@ -5,7 +5,7 @@
 from .abcmapper import AbcMapper
 
 class Hisat2(AbcMapper):
-    """ Class for run mapper """
+    """ Class for run Hisat2 """
 
     def __init__(self):
         """ Intialize hisat2 runner object """
