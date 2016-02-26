@@ -19,7 +19,7 @@ def setup_logging(options):
     log.setLevel(log_level)
 
     handler = logging.StreamHandler(sys.stderr)
-    formatter = logging.Formatter('%(levelname)s :: %(message)s')
+    formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
 
     handler.setFormatter(formatter)
     handler.setLevel(log_level)
