@@ -121,7 +121,10 @@ class AbcMapper(AbcStep, metaclass=ABCMeta):
                                                     input_flag=self.input_flag,
                                                     output_flag=
                                                     self.output_flag):
-            process.wait()
+
+            self._write_process(arg, name, process)
+
+            process.communicate()
 
             if process.returncode != 0:
                 log.warning(self.get_name() + " process " + name +
@@ -131,8 +134,6 @@ class AbcMapper(AbcStep, metaclass=ABCMeta):
                 log.info(self.get_name() + " process " + name +
                          " sucess")
                 self.state = StepStat.succes
-
-            self._write_process(arg, name, process)
 
 
     def _popen_run(self, base_cmd, input_flag="-i", output_flag="-o"):
@@ -147,7 +148,8 @@ class AbcMapper(AbcStep, metaclass=ABCMeta):
                 second_part.append(output_flag)
                 second_part.append(os.path.join(self.out_path, read_name))
                 process = subprocess.Popen(base_cmd + second_part,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE)
+                                           stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE,
+                                           universal_newlines=True)
 
                 yield (base_cmd + second_part, read_name, process)

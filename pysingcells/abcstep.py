@@ -49,10 +49,11 @@ class AbcStep(metaclass=ABCMeta):
 
     def _write_process(self, argument, name, process):
         """ Write step log in log_dir """
+
         log = {
             "cmd": " ".join(argument),
-            "stdout": process.stdout.read().decode(),
-            "stderr": process.stderr.read().decode()
+            "stdout": process.stdout.read(),
+            "stderr": process.stderr.read()
         }
 
         with open(os.path.join(self.log_dir, name), 'w') as log_file:
