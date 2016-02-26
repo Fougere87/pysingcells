@@ -4,13 +4,14 @@ base = /home/user/
 data = ${paths:base}/dat/
 bin = ${paths:base}/bin/
 genome = ${paths:data}/genome/organism.fasta
-index = ${paths:data}/indexes/${mapping:name}/index
+index = ${paths:data}/indexes/${mapping:name}/
 annotation = ${paths:data}/annotation/organism.gtf
 mapping = ${paths:data}/mapping/${mapping:name}
 merged_counts = ${paths:counts}/merge.tpm
 counts = ${paths:data}/counts/
 raws_read = ${paths:data}/reads/raws/
 trimmed_read = ${paths:data}/read/tmp/
+log = ${paths:data}/log/
 
 [trimming]
 bin_path = ${paths:bin}/trimming
@@ -18,20 +19,21 @@ in_path = ${paths:raws_read}
 out_path = ${paths:trimmed_read}
 
 [mapping]
-name = hisat2
+name = mapper_name
 bin_path = ${paths:bin}/${mapping:name}
 in_path = ${paths:trimmed_read}
 out_path = ${paths:mapping}
 index_path = ${paths:index}
-log = ${paths:base}/pysingcells/log/${mapping:name}/
+log = ${paths:log}/${mapping:name}/
+options =
 
 [counting]
 name = count_name
 bin_path = ${paths:bin}/${counting:name}
 in_path = ${paths:mapping}
 out_path = ${paths:counts}
-samtools_path = ${paths:bin}/samtools
-merged_path = ${paths:merged_counts}
+annotation_path = ${paths:annotation}
+options =
 
 [options]
 steps=trimming,mapping,counting
