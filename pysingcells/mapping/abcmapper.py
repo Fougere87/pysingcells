@@ -122,9 +122,7 @@ class AbcMapper(AbcStep, metaclass=ABCMeta):
                                                     output_flag=
                                                     self.output_flag):
 
-            self._write_process(arg, name, process)
-
-            process.communicate()
+            self._write_process(arg, name, *process.communicate())
 
             if process.returncode != 0:
                 log.warning(self.get_name() + " process " + name +

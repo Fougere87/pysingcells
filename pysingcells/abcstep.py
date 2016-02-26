@@ -47,13 +47,13 @@ class AbcStep(metaclass=ABCMeta):
         """ Get the name of mapper """
         return self.__class__.__name__
 
-    def _write_process(self, argument, name, process):
+    def _write_process(self, argument, name, out, err):
         """ Write step log in log_dir """
 
         log = {
             "cmd": " ".join(argument),
-            "stdout": process.stdout.read(),
-            "stderr": process.stderr.read()
+            "stdout": out,
+            "stderr": err
         }
 
         with open(os.path.join(self.log_dir, name), 'w') as log_file:

@@ -48,10 +48,8 @@ class FeatureCounts(AbcCounting):
                                    stderr=subprocess.PIPE,
                                    universal_newlines=True)
  
-        self._write_process(base_command, self.get_name(), process)
-
-        # don't wait because we use subprocess.PIPE
-        process.communicate()
+        self._write_process(base_command, self.get_name(),
+                            *process.communicate())
 
         return process.returncode == 0
 
