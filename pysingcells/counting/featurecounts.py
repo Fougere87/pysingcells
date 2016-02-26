@@ -9,7 +9,6 @@ from pandas import DataFrame, read_csv
 
 # project import
 from ..logger import log
-from ..abcstep import StepStat
 from .abccounting import AbcCounting, tpm
 
 # tested import
@@ -46,9 +45,13 @@ class FeatureCounts(AbcCounting):
         base_command += list_file
 
         process = subprocess.Popen(base_command, stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
+                                   stderr=subprocess.PIPE,
+                                   universal_newlines=True)
  
         self._write_process(base_command, self.get_name(), process)
+
+        # don't wait because we use subprocess.PIPE
+        process.communicate()
 
         return process.returncode == 0
 
@@ -66,26 +69,27 @@ class FeatureCounts(AbcCounting):
 
         raw_data = read_csv(self.out_path + "raw_counts.tsv", 
                             header=1, sep='\t', dtype=col_type)
+
         # cleaning
         delete_col = ["Chr", "Start", "End", "Strand"]
         for colname in delete_col:
             raw_data.drop(colname, inplace=True, axis=1)
 
-        samples = raw_data.columns[2:]
-
-        for sample in samples:
+        for sample in raw_data.columns[2:]:
             log.info("\t for sample " + sample)
-            nb_heat = sum(raw_data[sample])
+
+            nb_heat = raw_data[[sample]].sum(numeric_only=True)
 
             for index, count in raw_data[sample].iteritems():
-                raw_data.set_value(sample, index, tpm(count, 
-                                                      raw_data["Length"][index],
-                                                      nb_heat))
+                if count != 0:
+                    new_val = tpm(count, raw_data["Length"][index], nb_heat)
+                    raw_data.set_value(index, sample, new_val)
+
 
         # more cleaning
         raw_data.drop("Length", inplace=True, axis=1)
 
         # writing
-        raw_data.to_csv(self.out_path + "clean_tpm.csv")
+        raw_data.to_csv(self.out_path + "clean_tpm.csv", index=False)
 
         return True
