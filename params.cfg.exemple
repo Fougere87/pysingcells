@@ -34,6 +34,7 @@ in_path = ${paths:mapping}
 out_path = ${paths:counts}
 annotation_path = ${paths:annotation}
 options =
+compute_norm = tpm
 
 [options]
 steps=trimming,mapping,counting

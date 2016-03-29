@@ -31,6 +31,7 @@ class AbcCounting(AbcStep, metaclass=ABCMeta):
         self.log_dir = ""
         self.options = ""
         self.annotation_path = ""
+        self.compute_norm = "tpm"
 
         # command flag
         self.annotation_flag = ""
@@ -50,6 +51,7 @@ class AbcCounting(AbcStep, metaclass=ABCMeta):
         self.log_dir = counting["log"]
         self.options = counting["options"]
         self.annotation_path = counting["annotation_path"]
+        self.compute_norm = counting["compute_norm"]
 
         self.state = StepStat.load
 
@@ -141,3 +143,7 @@ def rpkm(count, length, nb_read):
     pm = nb_read / (10**6)
     rpm = count / pm
     return rpm / length
+
+def rpm(count, _, nb_read):
+    """ Return rpm value """
+    return (count / nb_read) * 10**6

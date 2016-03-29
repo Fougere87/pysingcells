@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # std import
+import os
 import subprocess
 
 # pandas import
@@ -9,7 +10,8 @@ from pandas import DataFrame, read_csv
 
 # project import
 from ..logger import log
-from .abccounting import AbcCounting, tpm
+from . import abccounting
+from .abccounting import AbcCounting
 
 # tested import
 try:
@@ -67,6 +69,13 @@ class FeatureCounts(AbcCounting):
 
         raw_data = read_csv(self.out_path + "raw_counts.tsv", 
                             header=1, sep='\t', dtype=col_type)
+        
+        # reading summary for nb of read mapped
+        summary = read_csv(self.out_path + "raw_counts.tsv.summary", header=0,
+                           sep='\t')
+        summary.columns = [label.replace(";", "") 
+                           for label in summary.columns]
+
 
         # cleaning
         delete_col = ["Chr", "Start", "End", "Strand"]
@@ -75,19 +84,24 @@ class FeatureCounts(AbcCounting):
 
         for sample in raw_data.columns[2:]:
             log.info("\t for sample " + sample)
+            print(sample)
 
-            nb_heat = raw_data[[sample]].sum(numeric_only=True)
+            nb_heat = summary[[sample]].sum(numeric_only=True)
 
             for index, count in raw_data[sample].iteritems():
                 if count != 0:
-                    new_val = tpm(count, raw_data["Length"][index], nb_heat)
+                    compute_new_val = getattr(abccounting, self.compute_norm)
+                    new_val = compute_new_val(count, raw_data["Length"][index],
+                                               nb_heat)
                     raw_data.set_value(index, sample, new_val)
 
-
         # more cleaning
+        raw_data.columns = [os.path.basename(name).split('.')[0] for name 
+                             in raw_data.columns]
         raw_data.drop("Length", inplace=True, axis=1)
 
         # writing
-        raw_data.to_csv(self.out_path + "clean_tpm.csv", index=False)
+        raw_data.to_csv(self.out_path + "clean_" + self.compute_norm
+                        + ".csv", index=False)
 
         return True
