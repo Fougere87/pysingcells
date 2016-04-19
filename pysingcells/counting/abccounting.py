@@ -140,10 +140,12 @@ def tpm(count, length, nb_read):
 def rpkm(count, length, nb_read):
     """ Return the rpkm value """
     length /= 10**3
-    pm = nb_read / (10**6)
-    rpm = count / pm
-    return rpm / length
+    return rpm(count, length, nb_read) / length
 
 def rpm(count, _, nb_read):
     """ Return rpm value """
     return (count / nb_read) * 10**6
+
+def raw(count, _, __):
+    """ Return rpm value """
+    return count

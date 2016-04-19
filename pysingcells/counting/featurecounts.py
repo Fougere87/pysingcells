@@ -82,6 +82,9 @@ class FeatureCounts(AbcCounting):
         for colname in delete_col:
             raw_data.drop(colname, inplace=True, axis=1)
 
+        # get normalisation function
+        compute_new_val = getattr(abccounting, self.compute_norm)
+
         for sample in raw_data.columns[2:]:
             log.info("\t for sample " + sample)
             print(sample)
@@ -90,7 +93,6 @@ class FeatureCounts(AbcCounting):
 
             for index, count in raw_data[sample].iteritems():
                 if count != 0:
-                    compute_new_val = getattr(abccounting, self.compute_norm)
                     new_val = compute_new_val(count, raw_data["Length"][index],
                                                nb_heat)
                     raw_data.set_value(index, sample, new_val)
